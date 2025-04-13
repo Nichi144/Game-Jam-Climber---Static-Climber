@@ -39,12 +39,7 @@ public class PotheadScript : MonoBehaviour
         animator.SetBool("Run", horizontalMove != 0);
         animator.SetBool("JumpEnd", is_grounded);
         is_jump = Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.W);
-        if (horizontalMove < 0){
-            spriteRenderer.flipX = true;
-        }
-        if (horizontalMove > 0){
-            spriteRenderer.flipX = false;
-        }
+
         animator.SetFloat("VerticalMove", PotHeadBody.velocity.y);
         if (is_jump && is_grounded){
             animator.SetBool("JumpLaunch", true);
@@ -59,7 +54,13 @@ public class PotheadScript : MonoBehaviour
     
     void FixedUpdate()
     {
-        PotHeadBody.velocity = new Vector3(horizontalMove * 10f,PotHeadBody.velocity.y, 0);
+        PotHeadBody.velocity = new Vector3(horizontalMove * 5f,PotHeadBody.velocity.y, 0);
+        if (horizontalMove < 0){
+            spriteRenderer.flipX = true;
+        }
+        if (horizontalMove > 0){
+            spriteRenderer.flipX = false;
+        }
     }
 
     void OnCollisionEnter2D(Collision2D collision)
