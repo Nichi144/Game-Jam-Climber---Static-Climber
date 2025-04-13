@@ -22,6 +22,9 @@ public class CloneInd : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        transform.position = new Vector3 (0, -1.5f,0);
+        values = PotheadScript.values;
+        jumps = PotheadScript.jumps;
         stop = true;
         PotHeadBody = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
@@ -36,9 +39,8 @@ public class CloneInd : MonoBehaviour
             pos = 0;
         }
         // Debug.Log(pos);
-        Debug.Log(lenght);
         if (stop){
-            if (pos < lenght){
+            if (pos < values.Count){
                 horizontalMove = values[pos];
                 is_jump = jumps[pos];
                 pos++;
@@ -54,14 +56,14 @@ public class CloneInd : MonoBehaviour
         animator.SetBool("JumpEnd", is_grounded);
         animator.SetFloat("VerticalMove", PotHeadBody.velocity.y);
         
-
         if (is_jump && is_grounded){
             animator.SetBool("JumpLaunch", true);
             StartCoroutine(WaitAndJump());
         } 
-        if (jumper){
+        if (jumper && is_grounded){
             jumper = false;
-            PotHeadBody.AddForce(Vector2.up * 15f,ForceMode2D.Impulse);
+            Debug.Log("jump");
+            PotHeadBody.AddForce(Vector2.up * 7.5f,ForceMode2D.Impulse);
             stop = true;
         }
     }

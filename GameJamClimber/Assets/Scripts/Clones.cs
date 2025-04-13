@@ -34,10 +34,14 @@ public class Clones : MonoBehaviour
             } else{
                 clones++;
                 PPlayer.SetActive(true);
-                PPlayer.GetComponent<CloneInd>().values = PotheadScript.values;
-                PPlayer.GetComponent<CloneInd>().jumps = PotheadScript.jumps;
+                PPlayer.GetComponent<CloneInd>().values = new List<float>(PotheadScript.values);
+                PPlayer.GetComponent<CloneInd>().jumps = new List<bool> (PotheadScript.jumps);
                 PPlayer.GetComponent<CloneInd>().lenght = PotheadScript.length;
             }
+
+            // PPlayer.GetComponent<CloneInd>().values.Clear();
+            // PPlayer.GetComponent<CloneInd>().jumps.Clear();
+            // PPlayer.GetComponent<CloneInd>().lenght = 0;
         }
     }
 }

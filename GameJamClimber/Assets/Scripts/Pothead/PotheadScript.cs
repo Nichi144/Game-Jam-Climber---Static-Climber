@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -14,8 +15,9 @@ public class PotheadScript : MonoBehaviour
     public bool is_grounded;
     private Animator animator;
     SpriteRenderer spriteRenderer;
-    public static List<float> values;
-    public static List<bool> jumps;
+    public static List<float> values = new List<float>();
+    public float[] vla;
+    public static List<bool> jumps = new List<bool>();
     bool jumper;
     bool stop;
     public static int length = 0;
@@ -35,11 +37,6 @@ public class PotheadScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {   
-        if (death.GetComponent<Death>().death == true){
-            values.Clear();
-            jumps.Clear();
-            length = 0;
-        }
         horizontalMove = 0;
         if (stop){
             horizontalMove = Input.GetAxis("Horizontal");
