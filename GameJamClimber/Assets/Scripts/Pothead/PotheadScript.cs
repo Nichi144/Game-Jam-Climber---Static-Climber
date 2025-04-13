@@ -37,7 +37,7 @@ public class PotheadScript : MonoBehaviour
             horizontalMove = 0;
         }
         animator.SetBool("Run", horizontalMove != 0);
-        animator.SetBool("JumpEnd", is_grounded);
+        animator.SetBool("JumpEnd", is_grounded && PotHeadBody.velocity.y == 0);
         is_jump = Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.W);
 
         animator.SetFloat("VerticalMove", PotHeadBody.velocity.y);
@@ -54,7 +54,7 @@ public class PotheadScript : MonoBehaviour
     
     void FixedUpdate()
     {
-        PotHeadBody.velocity = new Vector3(horizontalMove * 5f,PotHeadBody.velocity.y, 0);
+        PotHeadBody.velocity = new Vector3(horizontalMove * 3.5f,PotHeadBody.velocity.y, 0);
         if (horizontalMove < 0){
             spriteRenderer.flipX = true;
         }
@@ -66,10 +66,14 @@ public class PotheadScript : MonoBehaviour
     void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("StableGround")){
-            is_grounded = true;
+            if (PotHeadBody.velocity.y == 0){
+                is_grounded = true;
+            }
         }   
         if (collision.gameObject.CompareTag("UnstableGround")){
-            is_grounded = true;
+            if (PotHeadBody.velocity.y == 0){
+                is_grounded = true;
+            }
         }
     }
     void OnCollisionExit2D(Collision2D collision)
