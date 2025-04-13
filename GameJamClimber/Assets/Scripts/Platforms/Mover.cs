@@ -26,13 +26,10 @@ public class Mover : MonoBehaviour
     }
     void FixedUpdate()
     {     
-        Debug.Log((end - transform.position).magnitude);
         if ((end -  transform.position).magnitude < 1){
-            Debug.Log("switch");
             Vector3 temp = end;
             end = start;
             start = temp;
-            Debug.Log (end.x);
             dx = -dx;
             dy = -dy;
         }

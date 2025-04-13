@@ -1,31 +1,28 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
-public class PotheadScript : MonoBehaviour
+public class CloneInd : MonoBehaviour
 {
     private Rigidbody2D PotHeadBody;
-    public float horizontalMove;
+    private float horizontalMove = 10f;
     public bool is_jump;
     public bool is_grounded;
     private Animator animator;
     SpriteRenderer spriteRenderer;
-    public static List<float> values;
-    public static List<bool> jumps;
+    public List<float> values;
+    public List<bool> jumps;
     bool jumper;
     bool stop;
-    public static int length = 0;
+    private int pos = 0;
+    public int lenght;
     public GameObject death;
     
+
     // Start is called before the first frame update
     void Start()
     {
         stop = true;
-        jumper = false;
         PotHeadBody = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -36,21 +33,28 @@ public class PotheadScript : MonoBehaviour
     void Update()
     {   
         if (death.GetComponent<Death>().death == true){
-            values.Clear();
-            jumps.Clear();
-            length = 0;
+            pos = 0;
         }
-        horizontalMove = 0;
+        // Debug.Log(pos);
+        Debug.Log(lenght);
         if (stop){
-            horizontalMove = Input.GetAxis("Horizontal");
+            if (pos < lenght){
+                horizontalMove = values[pos];
+                is_jump = jumps[pos];
+                pos++;
+            } else {
+                horizontalMove = 0;
+                is_jump = false;
+            }
+        } else {
+            horizontalMove = 0;
         }
+
         animator.SetBool("Run", horizontalMove != 0);
         animator.SetBool("JumpEnd", is_grounded);
-        is_jump = Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.W);
         animator.SetFloat("VerticalMove", PotHeadBody.velocity.y);
+        
 
-        values.Add(horizontalMove);
-        jumps.Add(is_jump);
         if (is_jump && is_grounded){
             animator.SetBool("JumpLaunch", true);
             StartCoroutine(WaitAndJump());
@@ -60,7 +64,6 @@ public class PotheadScript : MonoBehaviour
             PotHeadBody.AddForce(Vector2.up * 15f,ForceMode2D.Impulse);
             stop = true;
         }
-        length++;
     }
     
     void FixedUpdate()
