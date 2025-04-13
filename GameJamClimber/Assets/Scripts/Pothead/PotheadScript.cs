@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using TMPro;
 using Unity.VisualScripting;
@@ -10,29 +11,34 @@ public class PotheadScript : MonoBehaviour
     private float horizontalMove = 10f;
     public bool is_jump;
     public bool is_grounded;
-    InputActions input;
     private Animator animator;
     SpriteRenderer spriteRenderer;
 
-    void Awake()
-    {
-        input = new InputActions();
-    }
+    bool jumper;
+    bool stop;
 
     // Start is called before the first frame update
     void Start()
     {
+        stop = true;
+        jumper = false;
         PotHeadBody = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        PotHeadBody.gravityScale = 2f;
     }
 
     // Update is called once per frame
     void Update()
-    {
-        horizontalMove = Input.GetAxis("Horizontal");
+    {   
+        if (stop){
+            horizontalMove = Input.GetAxis("Horizontal");
+        } else {
+            horizontalMove = 0;
+        }
         animator.SetBool("Run", horizontalMove != 0);
         animator.SetBool("JumpEnd", is_grounded);
+        is_jump = Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.W);
         if (horizontalMove < 0){
             spriteRenderer.flipX = true;
         }
@@ -41,14 +47,16 @@ public class PotheadScript : MonoBehaviour
         }
         animator.SetFloat("VerticalMove", PotHeadBody.velocity.y);
         if (is_jump && is_grounded){
-            PotHeadBody.AddForce(Vector2.up * 50f);
-            StartCoroutine(Wait());
-            // is_jump = false;
+            animator.SetBool("JumpLaunch", true);
+            StartCoroutine(WaitAndJump());
+        } 
+        if (jumper){
+            jumper = false;
+            PotHeadBody.AddForce(Vector2.up * 15f,ForceMode2D.Impulse);
+            stop = true;
         }
     }
     
-    
-
     void FixedUpdate()
     {
         PotHeadBody.velocity = new Vector3(horizontalMove * 10f,PotHeadBody.velocity.y, 0);
@@ -56,7 +64,7 @@ public class PotheadScript : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-         if (collision.gameObject.CompareTag("StableGround")){
+        if (collision.gameObject.CompareTag("StableGround")){
             is_grounded = true;
         }   
         if (collision.gameObject.CompareTag("UnstableGround")){
@@ -65,42 +73,21 @@ public class PotheadScript : MonoBehaviour
     }
     void OnCollisionExit2D(Collision2D collision)
     {
-      if (collision.gameObject.CompareTag("StableGround")){
+        if (collision.gameObject.CompareTag("StableGround")){
             is_grounded = false;
         }   
         if (collision.gameObject.CompareTag("UnstableGround")){
             is_grounded = false;
         }
     }
-
-
-
-    #region Input
-
-    void OnEnable()
-    {
-        input.Enable();
-        input.WASD.W.performed += OnMyActionPerformed;
-        input.WASD.Space.performed += OnMyActionPerformed;
+    private IEnumerator WaitAndJump (){
+        Debug.Log("enter");
+        stop = false;
+        yield return new WaitForSeconds(0.3f);
+        animator.SetBool("JumpLaunch", false);
+        Debug.Log("Exit");
+        jumper = true;
+        yield return null;
+        
     }
-
-    void OnDisable()
-    {
-        input.Disable();
-        input.WASD.Space.performed -= OnMyActionPerformed;
-    }
-
-    private void OnMyActionPerformed(InputAction.CallbackContext context)
-    {
-        is_jump = true;
-        StartCoroutine(Wait());
-    } 
-
-    private IEnumerator Wait(){
-        yield return new WaitForSeconds(0.1f);
-        is_jump = false;
-    }
-
-    #endregion Input
-
 }
